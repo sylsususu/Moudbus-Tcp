@@ -1,1 +1,92 @@
+这个头文件 MyModbus.h 定义了一个单例模式的 Modbus TCP 客户端类，封装了与 PLC 设备通信的核心功能。以下是其主要功能分析：
 
+核心功能
+单例模式实现
+
+通过静态实例和互斥锁确保全局唯一实例
+
+禁止拷贝构造和赋值操作
+
+提供 getInstance() 和 releaseInstance() 管理生命周期
+
+连接管理
+
+支持连接/断开 PLC 设备（TCP/IP）
+
+实现四种连接状态机：
+
+cpp
+Disconnected, Connecting, Connected, Disconnecting
+状态变化通过 stateChanged() 信号通知
+
+心跳定时器持续监测连接状态
+
+数据读写操作
+
+读取功能：
+
+读取单个浮点数 (readDouble32)
+
+读取 ASCII 字符串 (readASCII)
+
+批量读取浮点数 (readRegisters)
+
+写入功能：
+
+写入单个浮点数 (writeDouble32)
+
+写入字符串 (writeQString)
+
+批量写入浮点数 (writeRegisters)
+
+同步操作：所有方法使用事件循环实现同步等待
+
+数据类型转换
+
+浮点数 ↔ 寄存器值转换：
+
+cpp
+doubleToRegisters() / registersToDouble()
+字符串 ↔ 寄存器值转换：
+
+cpp
+qsToRegisters()
+数据缓存管理
+
+维护四类数据缓存（线程安全）：
+
+cpp
+plcInitMap        // 初始化数据
+plcrwAddressMap   // 读写地址数据
+plcQRCodeMap      // 二维码数据
+plcTimeMap        // 时间数据
+提供对应的 getter 方法（带互斥锁保护）
+
+关键设计特点
+线程安全机制
+
+使用 QMutex 保护共享数据
+
+通过 QMutexLocker 实现 RAII 风格的锁管理
+
+错误处理
+
+记录最后错误信息 (lastError)
+
+提供错误状态枚举：
+
+cpp
+Success, Failed, Timeout, InvalidState
+信号通知机制
+
+连接状态变化：stateChanged(ConnectionState)
+
+连接结果：connectionResult(OperationStatus)
+
+心跳状态：heartbeat(bool)
+
+配置参数
+
+最大寄存器限制：MAX_REGISTERS = 50
+
+默认从机 ID：slaveId = 1
