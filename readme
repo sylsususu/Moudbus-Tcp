@@ -90,3 +90,7 @@ Success, Failed, Timeout, InvalidState
 最大寄存器限制：MAX_REGISTERS = 50
 
 默认从机 ID：slaveId = 1
+
+3.![alt text](deepseek_mermaid_20250606_efdfca.png)
+
+
